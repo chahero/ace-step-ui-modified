@@ -42,6 +42,13 @@ if %ERRORLEVEL% NEQ 0 (
 )
 cd ..
 
+REM Create root .env if it doesn't exist
+if not exist ".env" (
+    echo.
+    echo Creating .env from example...
+    copy .env.example .env
+)
+
 REM Create server .env if it doesn't exist
 if not exist "server\.env" (
     echo.
@@ -68,6 +75,6 @@ echo.
 echo   2. Start ACE-Step UI:
 echo      start.bat
 echo.
-echo   3. Open http://localhost:3000
+echo   3. Open the frontend URL configured by FRONTEND_HOST and FRONTEND_PORT in .env
 echo.
 pause

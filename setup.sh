@@ -45,10 +45,14 @@ ACESTEP_PATH=$ACESTEP_PATH
 
 # Server ports
 PORT=3001
+FRONTEND_PROTOCOL=http
+FRONTEND_HOST=localhost
 FRONTEND_PORT=3000
+VITE_BACKEND_URL=
+VITE_API_URL=
 
 # Database
-DATABASE_PATH=./server/data/acestep.db
+DATABASE_PATH=./data/acestep.db
 EOF
 
 # Install frontend dependencies
@@ -83,5 +87,5 @@ echo ""
 echo "  # Terminal 2 - Start frontend"
 echo "  npm run dev"
 echo ""
-echo "Then open http://localhost:3000"
+echo "Then open the frontend URL configured by FRONTEND_HOST and FRONTEND_PORT in .env"
 echo ""

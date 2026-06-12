@@ -4,6 +4,17 @@
 
 set -e
 
+# Load environment
+if [ -f .env ]; then
+    export $(cat .env | grep -v '^#' | xargs)
+fi
+
+FRONTEND_PORT="${FRONTEND_PORT:-3000}"
+FRONTEND_HOST="${FRONTEND_HOST:-localhost}"
+FRONTEND_PROTOCOL="${FRONTEND_PROTOCOL:-http}"
+FRONTEND_ORIGIN="$FRONTEND_PROTOCOL://$FRONTEND_HOST:$FRONTEND_PORT"
+PORT="${PORT:-3001}"
+
 echo "=================================="
 echo "  ACE-Step Complete Startup"
 echo "=================================="
@@ -108,11 +119,11 @@ echo "  All Services Running!"
 echo "=================================="
 echo
 echo "  ACE-Step API: http://localhost:8001"
-echo "  Backend:      http://localhost:3001"
-echo "  Frontend:     http://localhost:3000"
+echo "  Backend:      http://localhost:$PORT"
+echo "  Frontend:     $FRONTEND_ORIGIN"
 echo
 if [ -n "$LOCAL_IP" ]; then
-    echo "  LAN Access:   http://$LOCAL_IP:3000"
+    echo "  LAN Access:   http://$LOCAL_IP:$FRONTEND_PORT"
     echo
 fi
 echo "  Logs:         ./logs/"
@@ -135,9 +146,9 @@ sleep 3
 
 # Open browser based on OS
 if command -v xdg-open &> /dev/null; then
-    xdg-open http://localhost:3000 &
+    xdg-open "$FRONTEND_ORIGIN" &
 elif command -v open &> /dev/null; then
-    open http://localhost:3000 &
+    open "$FRONTEND_ORIGIN" &
 fi
 
 echo

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Song } from '../types';
 import { Heart, Share2, Play, Pause, MoreHorizontal, X, Copy, Wand2, MoreVertical, Download, Repeat, Video, Music, Link as LinkIcon, Sparkles, Globe, Lock, Trash2, Edit3, Layers } from 'lucide-react';
-import { songsApi } from '../services/api';
+import { getBackendBaseUrl, songsApi } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useI18n } from '../context/I18nContext';
 import { SongDropdownMenu } from './SongDropdownMenu';
@@ -317,9 +317,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ song, onClose, onOpe
                         <button
                             onClick={() => {
                                 if (!song?.audioUrl) return;
-                                const baseUrl = window.location.port === '3000'
-                                    ? `${window.location.protocol}//${window.location.hostname}:3001`
-                                    : window.location.origin;
+                                const baseUrl = getBackendBaseUrl();
                                 const audioUrl = song.audioUrl.startsWith('http') ? song.audioUrl : `${baseUrl}${song.audioUrl}`;
                                 window.open(`${baseUrl}/demucs-web/?audioUrl=${encodeURIComponent(audioUrl)}`, '_blank');
                             }}

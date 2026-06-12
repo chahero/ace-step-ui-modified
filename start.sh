@@ -18,8 +18,14 @@ echo "Starting ACE-Step UI..."
 echo "ACE-Step: $ACESTEP_PATH"
 echo ""
 
+FRONTEND_PORT="${FRONTEND_PORT:-3000}"
+FRONTEND_HOST="${FRONTEND_HOST:-localhost}"
+FRONTEND_PROTOCOL="${FRONTEND_PROTOCOL:-http}"
+FRONTEND_ORIGIN="$FRONTEND_PROTOCOL://$FRONTEND_HOST:$FRONTEND_PORT"
+PORT="${PORT:-3001}"
+
 # Start backend in background
-echo "Starting backend on port ${PORT:-3001}..."
+echo "Starting backend on port $PORT..."
 cd server
 npm run dev &
 BACKEND_PID=$!
@@ -29,7 +35,7 @@ cd ..
 sleep 3
 
 # Start frontend
-echo "Starting frontend on port ${FRONTEND_PORT:-3000}..."
+echo "Starting frontend on port $FRONTEND_PORT..."
 npm run dev &
 FRONTEND_PID=$!
 
@@ -38,8 +44,8 @@ echo "=================================="
 echo "  ACE-Step UI Running"
 echo "=================================="
 echo ""
-echo "  Frontend: http://localhost:${FRONTEND_PORT:-3000}"
-echo "  Backend:  http://localhost:${PORT:-3001}"
+echo "  Frontend: $FRONTEND_ORIGIN"
+echo "  Backend:  http://localhost:$PORT"
 echo ""
 echo "Press Ctrl+C to stop..."
 

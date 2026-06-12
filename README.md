@@ -231,7 +231,7 @@ cd ace-step-ui
 start.bat
 ```
 
-Open **http://localhost:3000** and start creating!
+Open the frontend URL configured by `FRONTEND_HOST` and `FRONTEND_PORT` in `.env` and start creating.
 
 ---
 
@@ -352,18 +352,28 @@ start.bat
 
 | Access | URL |
 |--------|-----|
-| Local | http://localhost:3000 |
-| LAN (other devices) | http://YOUR_IP:3000 |
+| Local | `http://localhost:3000`, or your configured `FRONTEND_PROTOCOL`, `FRONTEND_HOST`, and `FRONTEND_PORT` |
+| LAN (other devices) | Set `FRONTEND_HOST` to your PC LAN IP, then open `http://FRONTEND_HOST:FRONTEND_PORT` |
 
 ---
 
 ## ⚙️ Configuration
 
-Edit `server/.env`:
+Edit `.env`:
 
 ```env
 # Server
 PORT=3001
+
+# Frontend
+FRONTEND_PROTOCOL=http
+FRONTEND_HOST=localhost
+FRONTEND_PORT=3000
+
+# Optional: set only when the frontend should call the backend directly.
+# Leave blank to use the Vite dev proxy.
+VITE_BACKEND_URL=
+VITE_API_URL=
 
 # ACE-Step Gradio URL (must match --port used when starting ACE-Step)
 ACESTEP_API_URL=http://localhost:8001
@@ -374,6 +384,17 @@ DATABASE_PATH=./data/acestep.db
 # Optional: Pexels API for video backgrounds
 PEXELS_API_KEY=your_key_here
 ```
+
+## Project Modification Notes
+
+This modified project ports the frontend and backend port configuration into `.env` and patches the places that previously assumed fixed ports.
+
+- `FRONTEND_HOST` and `FRONTEND_PORT` define the public frontend origin used by the backend.
+- `FRONTEND_PORT` also controls the Vite dev server port.
+- `PORT` controls the backend server port.
+- Vite proxy targets now follow `.env` instead of hard-coded `3001`.
+- Windows and Linux/macOS start scripts now read `.env` and print/open the configured frontend URL.
+- Stem extraction links now use the configured backend base URL instead of assuming `3000 -> 3001`.
 
 ---
 
@@ -438,7 +459,7 @@ Full control over every parameter:
 | **Genre always sounds like ballad** | Enable **AI Enhance** toggle in the Style section — it enriches your tags with proper metadata |
 | **AttributeError: 'NoneType'** | Update to latest ACE-Step-1.5 (fix merged in PR #109) |
 | **Songs show 0:00 duration** | Install FFmpeg: `sudo apt install ffmpeg` (Linux) or download from [ffmpeg.org](https://ffmpeg.org) (Windows) |
-| **LAN access not working** | Check firewall allows ports 3000 and 3001 |
+| **LAN access not working** | Set `FRONTEND_HOST` to your PC LAN IP and check firewall allows the configured `FRONTEND_PORT` and `PORT` |
 
 ---
 

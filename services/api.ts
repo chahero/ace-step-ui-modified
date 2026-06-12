@@ -1,5 +1,12 @@
-// Use relative URLs so Vite proxy handles them (enables LAN access)
-const API_BASE = '';
+const API_BASE = (import.meta.env.VITE_BACKEND_URL?.trim() || import.meta.env.VITE_API_URL?.trim() || '').replace(/\/+$/, '');
+
+export function getBackendBaseUrl(): string {
+  if (API_BASE) {
+    return API_BASE;
+  }
+
+  return window.location.origin;
+}
 
 // Resolve audio URL based on storage type
 export function getAudioUrl(audioUrl: string | undefined | null, songId?: string): string | undefined {

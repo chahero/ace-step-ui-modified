@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { Song } from '../types';
+import { getBackendBaseUrl } from '../services/api';
 import { useI18n } from '../context/I18nContext';
 import {
     Video,
@@ -124,9 +125,7 @@ export const SongDropdownMenu: React.FC<SongDropdownMenuProps> = ({
 
     const handleExtractStems = () => {
         if (!song.audioUrl) return;
-        const baseUrl = window.location.port === '3000'
-            ? `${window.location.protocol}//${window.location.hostname}:3001`
-            : window.location.origin;
+        const baseUrl = getBackendBaseUrl();
         const audioUrl = song.audioUrl.startsWith('http')
             ? song.audioUrl
             : `${baseUrl}${song.audioUrl}`;

@@ -23,6 +23,19 @@ if not exist "server\node_modules" (
     exit /b 1
 )
 
+REM Load environment from .env
+if exist ".env" (
+    for /f "usebackq eol=# tokens=1,* delims==" %%A in (".env") do (
+        set "%%A=%%B"
+    )
+)
+
+if "%FRONTEND_PORT%"=="" set FRONTEND_PORT=3000
+if "%FRONTEND_HOST%"=="" set FRONTEND_HOST=localhost
+if "%FRONTEND_PROTOCOL%"=="" set FRONTEND_PROTOCOL=http
+set FRONTEND_ORIGIN=%FRONTEND_PROTOCOL%://%FRONTEND_HOST%:%FRONTEND_PORT%
+if "%PORT%"=="" set PORT=3001
+
 REM Get ACE-Step path from environment or use default
 if "%ACESTEP_PATH%"=="" (
     set ACESTEP_PATH=..\ACE-Step-1.5
@@ -92,11 +105,11 @@ echo   All Services Running!
 echo ==================================
 echo.
 echo   ACE-Step API: http://localhost:8001
-echo   Backend:      http://localhost:3001
-echo   Frontend:     http://localhost:3000
+echo   Backend:      http://localhost:%PORT%
+echo   Frontend:     %FRONTEND_ORIGIN%
 echo.
 if defined LOCAL_IP (
-    echo   LAN Access:   http://%LOCAL_IP%:3000
+    echo   LAN Access:   http://%LOCAL_IP%:%FRONTEND_PORT%
     echo.
 )
 echo   Close the terminal windows to stop all services.
@@ -105,7 +118,7 @@ echo ==================================
 echo.
 echo Opening browser...
 timeout /t 3 /nobreak >nul
-start http://localhost:3000
+start "" "%FRONTEND_ORIGIN%"
 
 echo.
 echo Press any key to close this window (services will keep running)

@@ -4,29 +4,33 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, '.', '');
+  const frontendPort = parseInt(env.FRONTEND_PORT || env.VITE_FRONTEND_PORT || '3000', 10);
+  const backendPort = parseInt(env.PORT || env.BACKEND_PORT || '3001', 10);
+  const backendTarget = env.VITE_BACKEND_URL || env.VITE_API_URL || env.BACKEND_URL || `http://127.0.0.1:${backendPort}`;
+
   return {
     server: {
-      port: 3000,
+      port: frontendPort,
       host: '0.0.0.0',
       proxy: {
         '/api': {
-          target: 'http://127.0.0.1:3001',
+          target: backendTarget,
           changeOrigin: true,
         },
         '/audio': {
-          target: 'http://127.0.0.1:3001',
+          target: backendTarget,
           changeOrigin: true,
         },
         '/editor': {
-          target: 'http://127.0.0.1:3001',
+          target: backendTarget,
           changeOrigin: true,
         },
         '/blog': {
-          target: 'http://127.0.0.1:3001',
+          target: backendTarget,
           changeOrigin: true,
         },
         '/demucs-web': {
-          target: 'http://127.0.0.1:3001',
+          target: backendTarget,
           changeOrigin: true,
         },
       },

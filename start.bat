@@ -22,6 +22,19 @@ if not exist "server\node_modules" (
     exit /b 1
 )
 
+REM Load environment from .env
+if exist ".env" (
+    for /f "usebackq eol=# tokens=1,* delims==" %%A in (".env") do (
+        set "%%A=%%B"
+    )
+)
+
+if "%FRONTEND_PORT%"=="" set FRONTEND_PORT=3000
+if "%FRONTEND_HOST%"=="" set FRONTEND_HOST=localhost
+if "%FRONTEND_PROTOCOL%"=="" set FRONTEND_PROTOCOL=http
+set FRONTEND_ORIGIN=%FRONTEND_PROTOCOL%://%FRONTEND_HOST%:%FRONTEND_PORT%
+if "%PORT%"=="" set PORT=3001
+
 REM Get local IP for LAN access
 for /f "tokens=2 delims=:" %%a in ('ipconfig ^| findstr /c:"IPv4"') do (
     for /f "tokens=1" %%b in ("%%a") do (
@@ -58,11 +71,11 @@ echo ==================================
 echo   ACE-Step UI Running!
 echo ==================================
 echo.
-echo   Frontend: http://localhost:3000
-echo   Backend:  http://localhost:3001
+echo   Frontend: %FRONTEND_ORIGIN%
+echo   Backend:  http://localhost:%PORT%
 echo.
 if defined LOCAL_IP (
-    echo   LAN Access: http://%LOCAL_IP%:3000
+    echo   LAN Access: http://%LOCAL_IP%:%FRONTEND_PORT%
     echo.
 )
 echo   Close the terminal windows to stop.
@@ -71,6 +84,6 @@ echo ==================================
 echo.
 echo Opening browser...
 timeout /t 2 /nobreak >nul
-start http://localhost:3000
+start "" "%FRONTEND_ORIGIN%"
 
 pause
