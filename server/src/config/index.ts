@@ -5,17 +5,12 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
 
-const frontendProtocol = process.env.FRONTEND_PROTOCOL || 'http';
-const frontendHost = process.env.FRONTEND_HOST || 'localhost';
 const frontendPort = process.env.FRONTEND_PORT || '3000';
 
 export const config = {
   port: parseInt(process.env.PORT || '3001', 10),
-  frontendProtocol,
-  frontendHost,
   frontendPort: parseInt(frontendPort, 10),
   nodeEnv: process.env.NODE_ENV || 'development',
 
@@ -34,8 +29,8 @@ export const config = {
     apiKey: process.env.PEXELS_API_KEY || '',
   },
 
-  // Public frontend origin used for CORS, embeds, and redirects.
-  frontendUrl: `${frontendProtocol}://${frontendHost}:${frontendPort}`,
+  // Frontend origin used for CORS, embeds, and redirects.
+  frontendUrl: `http://localhost:${frontendPort}`,
 
   // Storage (local only)
   storage: {

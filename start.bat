@@ -30,9 +30,6 @@ if exist ".env" (
 )
 
 if "%FRONTEND_PORT%"=="" set FRONTEND_PORT=3000
-if "%FRONTEND_HOST%"=="" set FRONTEND_HOST=localhost
-if "%FRONTEND_PROTOCOL%"=="" set FRONTEND_PROTOCOL=http
-set FRONTEND_ORIGIN=%FRONTEND_PROTOCOL%://%FRONTEND_HOST%:%FRONTEND_PORT%
 if "%PORT%"=="" set PORT=3001
 
 REM Get local IP for LAN access
@@ -71,7 +68,7 @@ echo ==================================
 echo   ACE-Step UI Running!
 echo ==================================
 echo.
-echo   Frontend: %FRONTEND_ORIGIN%
+echo   Frontend: http://localhost:%FRONTEND_PORT%
 echo   Backend:  http://localhost:%PORT%
 echo.
 if defined LOCAL_IP (
@@ -84,6 +81,6 @@ echo ==================================
 echo.
 echo Opening browser...
 timeout /t 2 /nobreak >nul
-start "" "%FRONTEND_ORIGIN%"
+start http://localhost:%FRONTEND_PORT%
 
 pause

@@ -10,9 +10,6 @@ if [ -f .env ]; then
 fi
 
 FRONTEND_PORT="${FRONTEND_PORT:-3000}"
-FRONTEND_HOST="${FRONTEND_HOST:-localhost}"
-FRONTEND_PROTOCOL="${FRONTEND_PROTOCOL:-http}"
-FRONTEND_ORIGIN="$FRONTEND_PROTOCOL://$FRONTEND_HOST:$FRONTEND_PORT"
 PORT="${PORT:-3001}"
 
 echo "=================================="
@@ -120,7 +117,7 @@ echo "=================================="
 echo
 echo "  ACE-Step API: http://localhost:8001"
 echo "  Backend:      http://localhost:$PORT"
-echo "  Frontend:     $FRONTEND_ORIGIN"
+echo "  Frontend:     http://localhost:$FRONTEND_PORT"
 echo
 if [ -n "$LOCAL_IP" ]; then
     echo "  LAN Access:   http://$LOCAL_IP:$FRONTEND_PORT"
@@ -146,9 +143,9 @@ sleep 3
 
 # Open browser based on OS
 if command -v xdg-open &> /dev/null; then
-    xdg-open "$FRONTEND_ORIGIN" &
+    xdg-open "http://localhost:$FRONTEND_PORT" &
 elif command -v open &> /dev/null; then
-    open "$FRONTEND_ORIGIN" &
+    open "http://localhost:$FRONTEND_PORT" &
 fi
 
 echo

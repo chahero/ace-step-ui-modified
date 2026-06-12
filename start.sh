@@ -19,9 +19,6 @@ echo "ACE-Step: $ACESTEP_PATH"
 echo ""
 
 FRONTEND_PORT="${FRONTEND_PORT:-3000}"
-FRONTEND_HOST="${FRONTEND_HOST:-localhost}"
-FRONTEND_PROTOCOL="${FRONTEND_PROTOCOL:-http}"
-FRONTEND_ORIGIN="$FRONTEND_PROTOCOL://$FRONTEND_HOST:$FRONTEND_PORT"
 PORT="${PORT:-3001}"
 
 # Start backend in background
@@ -44,7 +41,7 @@ echo "=================================="
 echo "  ACE-Step UI Running"
 echo "=================================="
 echo ""
-echo "  Frontend: $FRONTEND_ORIGIN"
+echo "  Frontend: http://localhost:$FRONTEND_PORT"
 echo "  Backend:  http://localhost:$PORT"
 echo ""
 echo "Press Ctrl+C to stop..."

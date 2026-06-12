@@ -49,13 +49,6 @@ if not exist ".env" (
     copy .env.example .env
 )
 
-REM Create server .env if it doesn't exist
-if not exist "server\.env" (
-    echo.
-    echo Creating server\.env from example...
-    copy server\.env.example server\.env
-)
-
 REM Create data directory
 if not exist "server\data" (
     mkdir server\data
@@ -75,6 +68,6 @@ echo.
 echo   2. Start ACE-Step UI:
 echo      start.bat
 echo.
-echo   3. Open the frontend URL configured by FRONTEND_HOST and FRONTEND_PORT in .env
+echo   3. Open http://localhost:3000, or the FRONTEND_PORT configured in .env
 echo.
 pause

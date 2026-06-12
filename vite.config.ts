@@ -6,7 +6,7 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, '.', '');
   const frontendPort = parseInt(env.FRONTEND_PORT || env.VITE_FRONTEND_PORT || '3000', 10);
   const backendPort = parseInt(env.PORT || env.BACKEND_PORT || '3001', 10);
-  const backendTarget = env.VITE_BACKEND_URL || env.VITE_API_URL || env.BACKEND_URL || `http://127.0.0.1:${backendPort}`;
+  const backendTarget = `http://127.0.0.1:${backendPort}`;
 
   return {
     server: {

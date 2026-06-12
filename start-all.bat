@@ -31,9 +31,6 @@ if exist ".env" (
 )
 
 if "%FRONTEND_PORT%"=="" set FRONTEND_PORT=3000
-if "%FRONTEND_HOST%"=="" set FRONTEND_HOST=localhost
-if "%FRONTEND_PROTOCOL%"=="" set FRONTEND_PROTOCOL=http
-set FRONTEND_ORIGIN=%FRONTEND_PROTOCOL%://%FRONTEND_HOST%:%FRONTEND_PORT%
 if "%PORT%"=="" set PORT=3001
 
 REM Get ACE-Step path from environment or use default
@@ -106,7 +103,7 @@ echo ==================================
 echo.
 echo   ACE-Step API: http://localhost:8001
 echo   Backend:      http://localhost:%PORT%
-echo   Frontend:     %FRONTEND_ORIGIN%
+echo   Frontend:     http://localhost:%FRONTEND_PORT%
 echo.
 if defined LOCAL_IP (
     echo   LAN Access:   http://%LOCAL_IP%:%FRONTEND_PORT%
@@ -118,7 +115,7 @@ echo ==================================
 echo.
 echo Opening browser...
 timeout /t 3 /nobreak >nul
-start "" "%FRONTEND_ORIGIN%"
+start http://localhost:%FRONTEND_PORT%
 
 echo.
 echo Press any key to close this window (services will keep running)

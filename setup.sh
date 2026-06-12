@@ -35,25 +35,41 @@ echo "Found ACE-Step at: $ACESTEP_PATH"
 # Get absolute path
 ACESTEP_PATH=$(cd "$ACESTEP_PATH" && pwd)
 
-# Create .env file
-echo "Creating .env file..."
-cat > .env << EOF
+# Create .env file if it doesn't exist
+if [ ! -f .env ]; then
+    echo "Creating .env file..."
+    cat > .env << EOF
 # ACE-Step UI Configuration
 
 # Path to ACE-Step installation
 ACESTEP_PATH=$ACESTEP_PATH
 
-# Server ports
+# Server
 PORT=3001
-FRONTEND_PROTOCOL=http
-FRONTEND_HOST=localhost
-FRONTEND_PORT=3000
-VITE_BACKEND_URL=
-VITE_API_URL=
+NODE_ENV=development
 
-# Database
+# Frontend
+FRONTEND_PORT=3000
+
+# ACE-Step API (local)
+ACESTEP_API_URL=http://localhost:8001
+
+# Database (SQLite)
 DATABASE_PATH=./data/acestep.db
+
+# Storage
+AUDIO_DIR=./public/audio
+
+# JWT Secret (for local session management)
+JWT_SECRET=ace-step-ui-local-secret
+
+# Optional: Pexels API Key (for video backgrounds)
+# Get a free API key at https://www.pexels.com/api/
+PEXELS_API_KEY=
 EOF
+else
+    echo ".env already exists; keeping existing settings."
+fi
 
 # Install frontend dependencies
 echo ""
@@ -87,5 +103,5 @@ echo ""
 echo "  # Terminal 2 - Start frontend"
 echo "  npm run dev"
 echo ""
-echo "Then open the frontend URL configured by FRONTEND_HOST and FRONTEND_PORT in .env"
+echo "Then open http://localhost:\${FRONTEND_PORT:-3000}"
 echo ""

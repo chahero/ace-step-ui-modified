@@ -1,6 +1,5 @@
 import React, { useEffect, useRef } from 'react';
 import { Song } from '../types';
-import { getBackendBaseUrl } from '../services/api';
 import { useI18n } from '../context/I18nContext';
 import {
     Video,
@@ -125,11 +124,10 @@ export const SongDropdownMenu: React.FC<SongDropdownMenuProps> = ({
 
     const handleExtractStems = () => {
         if (!song.audioUrl) return;
-        const baseUrl = getBackendBaseUrl();
         const audioUrl = song.audioUrl.startsWith('http')
             ? song.audioUrl
-            : `${baseUrl}${song.audioUrl}`;
-        window.open(`${baseUrl}/demucs-web/?audioUrl=${encodeURIComponent(audioUrl)}`, '_blank');
+            : `${window.location.origin}${song.audioUrl}`;
+        window.open(`/demucs-web/?audioUrl=${encodeURIComponent(audioUrl)}`, '_blank');
         onClose();
     };
 
