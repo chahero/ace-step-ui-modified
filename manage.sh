@@ -21,6 +21,10 @@ ACESTEP_PATH="${ACESTEP_PATH:-../ACE-Step-1.5}"
 
 mkdir -p "$LOG_DIR"
 
+command_exists() {
+    command -v "$1" >/dev/null 2>&1
+}
+
 get_url_port() {
     local url="$1"
     local default_port="$2"
@@ -37,9 +41,54 @@ get_url_port() {
 
 ACESTEP_API_PORT="${ACESTEP_API_PORT:-$(get_url_port "$ACESTEP_API_URL" "8001")}"
 
+pid_on_port() {
+    local port="$1"
+
+    if command_exists lsof; then
+        lsof -ti TCP:"$port" -sTCP:LISTEN 2>/dev/null | head -n 1
+    elif command_exists fuser; then
+        fuser "$port/tcp" 2>/dev/null | awk '{print $1}'
+    fi
+}
+
 is_running() {
     local pid_file="$1"
     [ -f "$pid_file" ] && kill -0 "$(cat "$pid_file")" 2>/dev/null
+}
+
+assert_port_free() {
+    local name="$1"
+    local port="$2"
+    local pid
+    pid="$(pid_on_port "$port" || true)"
+
+    if [ -n "$pid" ]; then
+        echo "Error: $name port $port is already in use by PID $pid."
+        echo "Run: kill $pid"
+        exit 1
+    fi
+}
+
+print_recent_log() {
+    local log_file="$1"
+    local lines="${2:-80}"
+
+    if [ -f "$log_file" ]; then
+        echo "---- $log_file (last $lines lines) ----"
+        tail -n "$lines" "$log_file"
+    fi
+}
+
+assert_pid_alive() {
+    local name="$1"
+    local pid_file="$2"
+    local log_file="$3"
+
+    if ! is_running "$pid_file"; then
+        echo "Error: $name failed to stay running."
+        print_recent_log "$log_file" 80
+        exit 1
+    fi
 }
 
 print_status_line() {
@@ -71,6 +120,8 @@ start_api() {
         exit 1
     fi
 
+    assert_port_free "ACE-Step API" "$ACESTEP_API_PORT"
+
     echo "Starting ACE-Step API on port $ACESTEP_API_PORT..."
     (
         cd "$ACESTEP_PATH"
@@ -85,10 +136,12 @@ start_backend() {
         return
     fi
 
+    assert_port_free "Backend" "$PORT"
+
     echo "Starting backend on port $PORT..."
     (
         cd "$ROOT_DIR/server"
-        nohup npm run dev > "$LOG_DIR/backend.log" 2>&1 &
+        nohup ./node_modules/.bin/tsx src/index.ts > "$LOG_DIR/backend.log" 2>&1 &
         echo $! > "$LOG_DIR/backend.pid"
     )
 }
@@ -99,18 +152,23 @@ start_frontend() {
         return
     fi
 
+    assert_port_free "Frontend" "$FRONTEND_PORT"
+
     echo "Starting frontend on port $FRONTEND_PORT..."
-    nohup npm run dev > "$LOG_DIR/frontend.log" 2>&1 &
+    nohup ./node_modules/.bin/vite --host 0.0.0.0 --port "$FRONTEND_PORT" > "$LOG_DIR/frontend.log" 2>&1 &
     echo $! > "$LOG_DIR/frontend.pid"
 }
 
 start_services() {
     start_api
     sleep 3
+    assert_pid_alive "ACE-Step API" "$LOG_DIR/api.pid" "$LOG_DIR/api.log"
     start_backend
     sleep 2
+    assert_pid_alive "Backend" "$LOG_DIR/backend.pid" "$LOG_DIR/backend.log"
     start_frontend
     sleep 2
+    assert_pid_alive "Frontend" "$LOG_DIR/frontend.pid" "$LOG_DIR/frontend.log"
     status_services
 }
 
@@ -139,6 +197,22 @@ stop_services() {
     stop_one "Frontend" "$LOG_DIR/frontend.pid"
     stop_one "Backend" "$LOG_DIR/backend.pid"
     stop_one "ACE-Step API" "$LOG_DIR/api.pid"
+
+    for item in "Frontend:$FRONTEND_PORT" "Backend:$PORT" "ACE-Step API:$ACESTEP_API_PORT"; do
+        local name="${item%%:*}"
+        local port="${item##*:}"
+        local pid
+        pid="$(pid_on_port "$port" || true)"
+        if [ -n "$pid" ]; then
+            echo "Stopping leftover $name listener on port $port (PID $pid)..."
+            kill "$pid" 2>/dev/null || true
+            sleep 1
+            if kill -0 "$pid" 2>/dev/null; then
+                echo "$name listener did not stop gracefully; killing..."
+                kill -9 "$pid" 2>/dev/null || true
+            fi
+        fi
+    done
 }
 
 show_logs() {

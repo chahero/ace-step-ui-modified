@@ -11,6 +11,7 @@ export default defineConfig(({ mode }) => {
   return {
     server: {
       port: frontendPort,
+      strictPort: true,
       host: '0.0.0.0',
       proxy: {
         '/api': {
