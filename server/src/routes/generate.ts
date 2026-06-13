@@ -612,6 +612,7 @@ router.get('/models', async (_req, res: Response) => {
       'acestep-v15-turbo-shift1',      // submodel
       'acestep-v15-turbo-shift3',      // submodel
       'acestep-v15-turbo-continuous',   // submodel
+      'acestep-v15-xl-base',            // XL submodel
     ];
 
     // Query Gradio /v1/models to get the currently loaded/active model

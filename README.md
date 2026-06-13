@@ -36,6 +36,16 @@
   <img src="https://img.shields.io/github/stars/fspecii/ace-step-ui?style=flat-square" alt="Stars">
 </p>
 
+## Fork Changes
+
+This fork keeps the original ACE-Step UI behavior, with a small set of operational fixes for configurable local/server deployments:
+
+- Moved frontend/backend port wiring to `.env` via `FRONTEND_PORT` and `PORT`, including Vite proxy targets.
+- Consolidated runtime configuration around the root `.env` and removed the duplicate `server/.env.example`.
+- Added `manage.sh` for Jenkins/SSH operations: `status`, `start`, `stop`, `restart`, and `logs`.
+- Hardened service startup so occupied ports fail fast instead of silently moving to another Vite port.
+- Switched the default generation audio format to `wav` for better compatibility on environments where MP3 export requires incompatible `torchcodec` builds.
+
 ---
 
 ## 🎬 Demo
