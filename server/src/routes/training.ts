@@ -71,6 +71,12 @@ function getAceStepDir(): string {
   return path.resolve(config.datasets.dir, '..');
 }
 
+function resolveTrainingModelName(checkpoint?: unknown, configPath?: unknown): string {
+  if (typeof configPath === 'string' && configPath.trim()) return configPath.trim();
+  if (typeof checkpoint === 'string' && checkpoint.trim()) return checkpoint.trim();
+  return '';
+}
+
 // ================== NEW ROUTES ==================
 
 // POST /api/training/upload-audio — Upload audio files for a dataset
@@ -494,6 +500,50 @@ router.post('/init-model', authMiddleware, async (req: AuthenticatedRequest, res
       quantization = false,
     } = req.body;
 
+    const model = resolveTrainingModelName(checkpoint, configPath);
+    if (!model) {
+      res.status(400).json({ error: 'checkpoint or configPath is required' });
+      return;
+    }
+
+    // API mode path: manage.sh starts ACE-Step with `acestep-api`, not the
+    // Gradio app. `/v1/init` is the REST equivalent already used by generation.
+    try {
+      const apiRes = await fetch(`${config.acestep.apiUrl}/v1/init`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model,
+          init_llm: !!initLlm,
+        }),
+        signal: AbortSignal.timeout(300_000),
+      });
+
+      if (apiRes.ok) {
+        const data = await apiRes.json().catch(() => ({})) as any;
+        res.json({
+          status: data.status || data.message || `Initialized ${model} via ACE-Step API`,
+          modelReady: true,
+          mode: 'api',
+          model,
+        });
+        return;
+      }
+
+      // If the REST endpoint exists but rejects the request, surface that error
+      // instead of masking it behind a Gradio connection failure.
+      if (apiRes.status !== 404) {
+        const err = await apiRes.json().catch(async () => ({ error: await apiRes.text().catch(() => '') })) as any;
+        res.status(apiRes.status).json({
+          error: err?.detail || err?.error || `ACE-Step API init failed: ${apiRes.status}`,
+          mode: 'api',
+        });
+        return;
+      }
+    } catch (apiError) {
+      console.warn('[Training] ACE-Step API init unavailable, trying Gradio fallback:', apiError);
+    }
+
     const client = await getGradioClient();
     try {
       // Try calling by function name (may work if Gradio auto-names it)
@@ -519,12 +569,16 @@ router.post('/init-model', authMiddleware, async (req: AuthenticatedRequest, res
       // Lambda endpoints aren't named — suggest using Gradio UI
       res.status(501).json({
         error: 'Model initialization requires the Gradio UI.',
-        hint: 'Initialize the model in the ACE-Step Gradio UI service configuration section, then return here for training.',
+        hint: 'The ACE-Step REST API did not expose /v1/init and the Gradio handler was not available.',
       });
     }
   } catch (error) {
     console.error('[Training] Init model error:', error);
-    res.status(500).json({ error: error instanceof Error ? error.message : 'Model init failed' });
+    res.status(501).json({
+      error: 'Training model initialization is not available from the current ACE-Step endpoint.',
+      detail: error instanceof Error ? error.message : 'Model init failed',
+      hint: 'Start ACE-Step with an endpoint that supports /v1/init, or use the Gradio app for Training-only handlers.',
+    });
   }
 });
 
