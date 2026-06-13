@@ -142,7 +142,8 @@ export const Player: React.FC<PlayerProps> = ({
             const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = url;
-            link.download = `${currentSong.title || 'song'}.mp3`;
+            const ext = currentSong.audioUrl.toLowerCase().includes('.flac') ? 'flac' : currentSong.audioUrl.toLowerCase().includes('.wav') ? 'wav' : 'mp3';
+            link.download = `${currentSong.title || 'song'}.${ext}`;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);

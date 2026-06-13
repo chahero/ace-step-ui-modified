@@ -169,7 +169,7 @@ export const CreatePanel: React.FC<CreatePanelProps> = ({
   const [seed, setSeed] = useState(-1);
   const [thinking, setThinking] = useState(false); // Default false for GPU compatibility
   const [enhance, setEnhance] = useState(false); // AI Enhance: uses LLM to enrich caption & generate metadata
-  const [audioFormat, setAudioFormat] = useState<'mp3' | 'flac'>('mp3');
+  const [audioFormat, setAudioFormat] = useState<'mp3' | 'flac' | 'wav'>('wav');
   const [inferenceSteps, setInferenceSteps] = useState(12);
   const [inferMethod, setInferMethod] = useState<'ode' | 'sde'>('ode');
   const [lmBackend, setLmBackend] = useState<'pt' | 'vllm'>('pt');
@@ -1988,9 +1988,10 @@ export const CreatePanel: React.FC<CreatePanelProps> = ({
                 <label className="text-xs font-medium text-zinc-600 dark:text-zinc-400">{t('audioFormat')}</label>
                 <select
                   value={audioFormat}
-                  onChange={(e) => setAudioFormat(e.target.value as 'mp3' | 'flac')}
+                  onChange={(e) => setAudioFormat(e.target.value as 'mp3' | 'flac' | 'wav')}
                   className="w-full bg-zinc-50 dark:bg-black/20 border border-zinc-200 dark:border-white/10 rounded-xl px-2 py-1.5 text-xs text-zinc-900 dark:text-white focus:outline-none focus:border-pink-500 dark:focus:border-pink-500 transition-colors cursor-pointer [&>option]:bg-white [&>option]:dark:bg-zinc-800 [&>option]:text-zinc-900 [&>option]:dark:text-white"
                 >
+                  <option value="wav">WAV</option>
                   <option value="mp3">{t('mp3Smaller')}</option>
                   <option value="flac">{t('flacLossless')}</option>
                 </select>

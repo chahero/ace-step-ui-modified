@@ -108,7 +108,7 @@ interface GenerateBody {
   randomSeed?: boolean;
   seed?: number;
   thinking?: boolean;
-  audioFormat?: 'mp3' | 'flac';
+  audioFormat?: 'mp3' | 'flac' | 'wav';
   inferMethod?: 'ode' | 'sde';
   shift?: number;
 
@@ -427,7 +427,8 @@ router.get('/status/:jobId', authMiddleware, async (req: AuthenticatedRequest, r
 
               try {
                 const { buffer } = await downloadAudioToBuffer(audioUrl);
-                const ext = audioUrl.includes('.flac') ? '.flac' : '.mp3';
+                const lowerUrl = audioUrl.toLowerCase();
+                const ext = lowerUrl.includes('.flac') ? '.flac' : lowerUrl.includes('.wav') ? '.wav' : '.mp3';
                 const storageKey = `${req.user!.id}/${songId}${ext}`;
                 await storage.upload(storageKey, buffer, `audio/${ext.slice(1)}`);
                 const storedPath = storage.getPublicUrl(storageKey);

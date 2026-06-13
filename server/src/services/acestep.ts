@@ -178,7 +178,7 @@ async function buildGradioArgs(params: GenerationParams): Promise<unknown[]> {
     params.shift ?? 3.0,                                          // 24: Shift
     params.inferMethod || 'ode',                                  // 25: Inference Method
     params.customTimesteps || '',                                 // 26: Custom Timesteps
-    params.audioFormat || 'mp3',                                  // 27: Audio Format
+    params.audioFormat || 'wav',                                  // 27: Audio Format
     params.lmTemperature ?? 0.85,                                 // 28: LM Temperature
     isThinking,                                                   // 29: Think
     params.lmCfgScale ?? 2.0,                                    // 30: LM CFG Scale
@@ -278,7 +278,7 @@ export interface GenerationParams {
   seed?: number;
   thinking?: boolean;
   enhance?: boolean;
-  audioFormat?: 'mp3' | 'flac';
+  audioFormat?: 'mp3' | 'flac' | 'wav';
   inferMethod?: 'ode' | 'sde';
   shift?: number;
 
@@ -576,11 +576,12 @@ async function processGenerationViaGradio(
   // Download audio files to local storage
   const audioUrls: string[] = [];
   let actualDuration = 0;
-  const audioFormat = params.audioFormat ?? 'mp3';
+  const audioFormat = params.audioFormat ?? 'wav';
 
   for (const fileObj of audioFileObjects) {
     const origName = fileObj.orig_name || fileObj.path || '';
-    const ext = origName.includes('.flac') ? '.flac' : `.${audioFormat}`;
+    const lowerOrigName = origName.toLowerCase();
+    const ext = lowerOrigName.includes('.flac') ? '.flac' : lowerOrigName.includes('.wav') ? '.wav' : `.${audioFormat}`;
     const filename = `${jobId}_${audioUrls.length}${ext}`;
     const destPath = path.join(AUDIO_DIR, filename);
 
@@ -672,7 +673,7 @@ async function processGenerationViaPython(
       '--batch-size', String(params.batchSize ?? 1),
       '--infer-steps', String(params.inferenceSteps ?? 8),
       '--guidance-scale', String(params.guidanceScale ?? 10.0),
-      '--audio-format', params.audioFormat ?? 'mp3',
+      '--audio-format', params.audioFormat ?? 'wav',
       '--output-dir', jobOutputDir,
       '--json',
     ];
@@ -730,7 +731,8 @@ async function processGenerationViaPython(
     const audioUrls: string[] = [];
     let actualDuration = 0;
     for (const srcPath of result.audio_paths) {
-      const ext = srcPath.includes('.flac') ? '.flac' : '.mp3';
+      const lowerSrcPath = srcPath.toLowerCase();
+      const ext = lowerSrcPath.includes('.flac') ? '.flac' : lowerSrcPath.includes('.wav') ? '.wav' : '.mp3';
       const filename = `${jobId}_${audioUrls.length}${ext}`;
       const destPath = path.join(AUDIO_DIR, filename);
 
@@ -955,7 +957,8 @@ export async function downloadAudio(remoteUrl: string, songId: string): Promise<
   }
 
   const buffer = await response.arrayBuffer();
-  const ext = remoteUrl.includes('.flac') ? '.flac' : '.mp3';
+  const lowerRemoteUrl = remoteUrl.toLowerCase();
+  const ext = lowerRemoteUrl.includes('.flac') ? '.flac' : lowerRemoteUrl.includes('.wav') ? '.wav' : '.mp3';
   const filename = `${songId}${ext}`;
   const filepath = path.join(AUDIO_DIR, filename);
 

@@ -141,7 +141,8 @@ export const SongDropdownMenu: React.FC<SongDropdownMenuProps> = ({
 
             const link = document.createElement('a');
             link.href = url;
-            link.download = `${song.title || 'song'}.mp3`;
+            const ext = song.audioUrl.toLowerCase().includes('.flac') ? 'flac' : song.audioUrl.toLowerCase().includes('.wav') ? 'wav' : 'mp3';
+            link.download = `${song.title || 'song'}.${ext}`;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
