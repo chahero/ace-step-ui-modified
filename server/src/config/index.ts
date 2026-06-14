@@ -8,6 +8,9 @@ const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
 
 const frontendPort = process.env.FRONTEND_PORT || '3000';
+const aceStepPath = process.env.ACESTEP_PATH
+  ? (path.isAbsolute(process.env.ACESTEP_PATH) ? process.env.ACESTEP_PATH : path.resolve(__dirname, '../../..', process.env.ACESTEP_PATH))
+  : path.resolve(__dirname, '../../../ACE-Step-1.5');
 
 export const config = {
   port: parseInt(process.env.PORT || '3001', 10),
@@ -38,10 +41,10 @@ export const config = {
     audioDir: process.env.AUDIO_DIR || path.join(__dirname, '../../public/audio'),
   },
 
-  // Training datasets (inside ACE-Step-1.5 so Gradio can access them)
+  // Training datasets (inside ACE-Step-1.5 so the ACE-Step API can access them)
   datasets: {
-    dir: process.env.DATASETS_DIR || path.join(__dirname, '../../../ACE-Step-1.5/datasets'),
-    uploadsDir: process.env.DATASETS_UPLOADS_DIR || path.join(__dirname, '../../../ACE-Step-1.5/datasets/uploads'),
+    dir: process.env.DATASETS_DIR || path.join(aceStepPath, 'datasets'),
+    uploadsDir: process.env.DATASETS_UPLOADS_DIR || path.join(aceStepPath, 'datasets/uploads'),
   },
 
   // Simplified JWT (for local session, not critical security)
