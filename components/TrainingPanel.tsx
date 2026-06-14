@@ -32,6 +32,7 @@ const TIME_SIGS = ['', '2', '3', '4', '6', 'N/A'];
 
 const DEVICES = ['auto', 'cuda', 'mps', 'xpu', 'cpu'];
 const BACKENDS = ['pt', 'vllm', 'mlx'];
+const SELECT_OPTION_CLASSES = 'text-zinc-900 dark:text-zinc-200 [&>option]:bg-white [&>option]:text-zinc-900 [&>option]:dark:bg-zinc-800 [&>option]:dark:text-white';
 
 // Pipeline step definitions
 const PIPELINE_STEPS = [
@@ -690,7 +691,7 @@ export const TrainingPanel: React.FC = () => {
             <div className="space-y-2 mt-2">
               <div className="flex gap-2 items-center">
                 <FieldRow label="Checkpoint">
-                  <select value={selectedCheckpoint} onChange={e => setSelectedCheckpoint(e.target.value)} className="flex-1 bg-white/5 border border-white/10 rounded-lg px-2 py-1 text-xs text-zinc-200">
+                  <select value={selectedCheckpoint} onChange={e => setSelectedCheckpoint(e.target.value)} className={`flex-1 bg-white/5 border border-white/10 rounded-lg px-2 py-1 text-xs ${SELECT_OPTION_CLASSES}`}>
                     {modelCheckpoints.map(c => <option key={c} value={c}>{c}</option>)}
                     {modelCheckpoints.length === 0 && <option value="">No checkpoints found</option>}
                   </select>
@@ -700,19 +701,19 @@ export const TrainingPanel: React.FC = () => {
                 </button>
               </div>
               <FieldRow label="Config">
-                <select value={selectedConfig} onChange={e => setSelectedConfig(e.target.value)} className="flex-1 bg-white/5 border border-white/10 rounded-lg px-2 py-1 text-xs text-zinc-200">
+                <select value={selectedConfig} onChange={e => setSelectedConfig(e.target.value)} className={`flex-1 bg-white/5 border border-white/10 rounded-lg px-2 py-1 text-xs ${SELECT_OPTION_CLASSES}`}>
                   {modelConfigs.map(c => <option key={c} value={c}>{c}</option>)}
                   {modelConfigs.length === 0 && <option value="">No configs found</option>}
                 </select>
               </FieldRow>
               <div className="grid grid-cols-2 gap-2">
                 <FieldRow label="Device">
-                  <select value={selectedDevice} onChange={e => setSelectedDevice(e.target.value)} className="flex-1 bg-white/5 border border-white/10 rounded-lg px-2 py-1 text-xs text-zinc-200">
+                  <select value={selectedDevice} onChange={e => setSelectedDevice(e.target.value)} className={`flex-1 bg-white/5 border border-white/10 rounded-lg px-2 py-1 text-xs ${SELECT_OPTION_CLASSES}`}>
                     {DEVICES.map(d => <option key={d} value={d}>{d}</option>)}
                   </select>
                 </FieldRow>
                 <FieldRow label="Backend">
-                  <select value={selectedBackend} onChange={e => setSelectedBackend(e.target.value)} className="flex-1 bg-white/5 border border-white/10 rounded-lg px-2 py-1 text-xs text-zinc-200">
+                  <select value={selectedBackend} onChange={e => setSelectedBackend(e.target.value)} className={`flex-1 bg-white/5 border border-white/10 rounded-lg px-2 py-1 text-xs ${SELECT_OPTION_CLASSES}`}>
                     {BACKENDS.map(b => <option key={b} value={b}>{b}</option>)}
                   </select>
                 </FieldRow>
@@ -861,7 +862,7 @@ export const TrainingPanel: React.FC = () => {
                       <input type="text" value={datasetSettings.customTag} onChange={e => setDatasetSettings(s => ({ ...s, customTag: e.target.value }))} className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-sm text-zinc-200 focus:outline-none focus:border-pink-500/50" placeholder="e.g. my_style" />
                     </FieldRow>
                     <FieldRow label={t('tagPosition')}>
-                      <select value={datasetSettings.tagPosition} onChange={e => setDatasetSettings(s => ({ ...s, tagPosition: e.target.value as DatasetSettings['tagPosition'] }))} className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-sm text-zinc-200 focus:outline-none focus:border-pink-500/50">
+                      <select value={datasetSettings.tagPosition} onChange={e => setDatasetSettings(s => ({ ...s, tagPosition: e.target.value as DatasetSettings['tagPosition'] }))} className={`flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-pink-500/50 ${SELECT_OPTION_CLASSES}`}>
                         <option value="prepend">{t('tagPrepend')}</option>
                         <option value="append">{t('tagAppend')}</option>
                         <option value="replace">{t('tagReplace')}</option>
@@ -934,7 +935,7 @@ export const TrainingPanel: React.FC = () => {
                       <input type="text" value={editGenre} onChange={e => setEditGenre(e.target.value)} className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-sm text-zinc-200 focus:outline-none focus:border-pink-500/50" />
                     </FieldRow>
                     <FieldRow label={t('promptOverride')}>
-                      <select value={editPromptOverride} onChange={e => setEditPromptOverride(e.target.value)} className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-sm text-zinc-200 focus:outline-none focus:border-pink-500/50">
+                      <select value={editPromptOverride} onChange={e => setEditPromptOverride(e.target.value)} className={`flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-pink-500/50 ${SELECT_OPTION_CLASSES}`}>
                         <option value="Use Global Ratio">{t('useGlobalRatio')}</option>
                         <option value="Caption">{t('caption')}</option>
                         <option value="Genre">{t('genre')}</option>
@@ -963,7 +964,7 @@ export const TrainingPanel: React.FC = () => {
                     <div className="grid grid-cols-3 gap-2">
                       <div>
                         <label className="text-[11px] text-zinc-500 mb-0.5 block">Time Sig</label>
-                        <select value={editTimeSig} onChange={e => setEditTimeSig(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-sm text-zinc-200 focus:outline-none focus:border-pink-500/50">
+                        <select value={editTimeSig} onChange={e => setEditTimeSig(e.target.value)} className={`w-full bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-pink-500/50 ${SELECT_OPTION_CLASSES}`}>
                           {TIME_SIGS.map(ts => <option key={ts} value={ts}>{ts || 'Auto'}</option>)}
                         </select>
                       </div>
@@ -973,7 +974,7 @@ export const TrainingPanel: React.FC = () => {
                       </div>
                       <div>
                         <label className="text-[11px] text-zinc-500 mb-0.5 block">Language</label>
-                        <select value={editLanguage} onChange={e => setEditLanguage(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-sm text-zinc-200 focus:outline-none focus:border-pink-500/50">
+                        <select value={editLanguage} onChange={e => setEditLanguage(e.target.value)} className={`w-full bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-pink-500/50 ${SELECT_OPTION_CLASSES}`}>
                           {LANGUAGES.map(l => <option key={l.value} value={l.value}>{l.label}</option>)}
                         </select>
                       </div>
